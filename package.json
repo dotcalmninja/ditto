@@ -1,0 +1,28 @@
+{
+  "name": "ditto",
+  "version": "1.0.0",
+  "description": "A pluggable static site generator written in Node.js",
+  "main": "index.js",
+  "license": "GPL-3.0",
+  "scripts": {
+    "pretest": "npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "fs-extra": "^4.0.2",
+    "glob": "^7.1.2",
+    "rimraf": "^2.6.2"
+  },
+  "keywords": [
+    "static",
+    "file",
+    "site",
+    "website",
+    "generator",
+    "json",
+    "jekyll",
+    "wintersmith",
+    "blacksmith",
+    "hugo"
+  ]
+}

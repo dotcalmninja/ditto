@@ -1,0 +1,11 @@
+{
+  "name": "basic-site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {    
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}

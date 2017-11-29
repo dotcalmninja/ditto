@@ -1,3 +1,4 @@
 {
-  "title": "sample product"
+  "title": "sample product",
+  "test": "test from products/sample.json"
 }

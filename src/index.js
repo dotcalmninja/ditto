@@ -100,13 +100,7 @@ Ditto.prototype.use = function(middleware) {
   return this;
 };
 
-/* Write the files parsed by middleware */
-Ditto.prototype.write = function(files) {
-  for (i in files) {
-    this.writeFile(path.resolve(this._destination, i), files[i]);
-  }
-};
-
+/* Write the file parsed by middleware */
 Ditto.prototype.writeFile = function(filepath, data) {
   delete data._contents;
 

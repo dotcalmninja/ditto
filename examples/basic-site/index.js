@@ -1,6 +1,6 @@
 const
   Ditto = require('ditto'),
-  DittoJSON = require('ditto-json'),
+  DittoJson = require('ditto-json'),
   DittoHbs = require('ditto-hbs');
 
 Ditto(__dirname)
@@ -9,7 +9,7 @@ Ditto(__dirname)
   })
   .source('./src')
   .destination('./build')
-  .use(DittoJSON())
+  .use(DittoJson())
   .use(DittoHbs({  	
   	defaultTemplate: 'index.hbs',
   	partials: './templates/partials',

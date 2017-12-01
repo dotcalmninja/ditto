@@ -2,10 +2,12 @@
  * Ditto
  */
 const
+  events = require('events'),
   fs = require('fs-extra'),
   glob = require('glob'),
   path = require('path'),
-  rimraf = require('rimraf');
+  rimraf = require('rimraf'),
+  util = require('util');
 
 module.exports = Ditto;
 
@@ -14,6 +16,8 @@ function Ditto(workingDirectory) {
     return new Ditto(workingDirectory);
   }
 
+  events.EventEmitter.call(this);
+  
   //pipline
   this.clobber(true);
   this.metadata({});
@@ -22,27 +26,27 @@ function Ditto(workingDirectory) {
   //directories
   this.destination('build');
   this.source('src');
-  this.cwd(workingDirectory);
+  this.cwd(workingDirectory);  
 };
+
+/* Inherit Event Emitter prototype */
+util.inherits(Ditto, events.EventEmitter);
 
 /* Build It */
 Ditto.prototype.build = function(onError) {
-  var
-    self = this,
-    files = self.discover(),
-    i = 0;
+  var self = this;
 
-  function next(files) {
-    var mw = self.middleware[i++];
+  //register listeners
+  self.on("foundFiles", self.read);
+  self.on("readFiles", self.run);
 
-    if(mw)
-      mw(files, self, next);
-  };
-
-  if (self._clobber)
-    rimraf(this._destination + '/*', next.bind(null, files));
-  else
-    next(files);
+  try {
+    //kickoff build
+    self.discover();
+  }
+  catch (err){
+    console.error(err);
+  }  
 };
 
 /* Should we clobber on build? */
@@ -64,28 +68,71 @@ Ditto.prototype.destination = function(destination) {
 };
 
 /* Discover & parse files in source directory */
-Ditto.prototype.discover = function(next) {
-  var
-    filepaths = glob.sync(this._source + '/**/*.*'),
-    files = {};
+Ditto.prototype.discover = function() {
+  var self = this;
 
-  for (var i = 0; i < filepaths.length; i++) {
-    var file = filepaths[i];
+  glob(this._source + '/**/*.*', function(err, filepaths){
+    if(err) throw err;
 
-    var buffer = fs.readFileSync(file);
-
-    files[path.relative(this._source, file)] = {
-      _contents: buffer
-    };
-  }
-
-  return files;
+    self.emit("foundFiles", filepaths);
+  });
 };
 
 /* Set metadata */
 Ditto.prototype.metadata = function(metadata) {
   this._metadata = metadata;
   return this;
+};
+
+/* Read files into buffer */
+Ditto.prototype.read = function(filepaths){
+  var 
+    self = this, 
+    promises = [];
+
+  for (var i = 0; i < filepaths.length; i++) {
+    promises.push(this.readFile(filepaths[i]));
+  }
+
+  Promise.all(promises)
+    .then(function(files){
+      self.emit("readFiles", files);
+    });
+};
+
+/* Read file async */
+Ditto.prototype.readFile = function(filepath){
+  var self = this;
+
+  return new Promise(function(resolve, reject) {
+    fs.readFile(filepath, function(err, buffer){
+        if (err) reject(err); 
+        else { 
+          resolve({ 
+            rel: path.relative(self._source, filepath), 
+            content: buffer 
+          });
+        } 
+    });
+  });
+};
+
+/* Run middleware pipeline */
+Ditto.prototype.run = function(files){
+  var self = this,
+      i = 0;
+
+  function next(files) {
+    var mw = self.middleware[i++];
+    console.log(mw.toString());
+    if(mw)
+      mw(files, self, next);
+  };
+
+  if (self._clobber)
+    rimraf(path.join(self._destination, '/*'), next.bind(null, files));
+  else
+    next(files);
 };
 
 /* Set source directory */
@@ -100,11 +147,4 @@ Ditto.prototype.use = function(middleware) {
   return this;
 };
 
-/* Write the file parsed by middleware */
-Ditto.prototype.writeFile = function(filepath, data) {
-  delete data._contents;
 
-  fs.outputFile(filepath, data, function(err) {
-    if (err) console.error(err);
-  })
-};

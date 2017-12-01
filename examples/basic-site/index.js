@@ -9,9 +9,9 @@ Ditto(__dirname)
   })
   .source('./src')
   .destination('./build')
-  .use(DittoJson())
-  .use(DittoHbs({  	
-  	defaultTemplate: 'index.hbs',
+  .use(new DittoJson())
+  .use(new DittoHbs({
+  	defaultTemplate: 'index',
   	partials: './templates/partials',
   	templates: './templates'
   }))

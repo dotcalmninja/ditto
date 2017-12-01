@@ -16,8 +16,6 @@ function Ditto(workingDirectory) {
     return new Ditto(workingDirectory);
   }
 
-  events.EventEmitter.call(this);
-
   //pipline
   this.clobber(true);
   this.files = {};
@@ -28,11 +26,6 @@ function Ditto(workingDirectory) {
   this.destination('build');
   this.source('src');
   this.cwd(workingDirectory);
-
-  //register listeners
-  this.on("foundFiles", this.read);
-  this.on("readFiles", this.run);
-  this.on("middlewareDone", this.write);
 };
 
 /* Inherit Event Emitter prototype */
@@ -41,11 +34,15 @@ util.inherits(Ditto, events.EventEmitter);
 /* Build It */
 Ditto.prototype.build = function(onError) {
   console.info("INFO: build()");
-  var self = this;
+
+  //register listeners
+  this.on("foundFiles", this.read);
+  this.on("readFiles", this.run);
+  this.on("middlewareDone", this.write);
 
   try {
     //kickoff build
-    self.discover();
+    this.discover();
   } catch (err) {
     console.error(err);
     if (onError(err));
@@ -175,11 +172,11 @@ Ditto.prototype.use = function(middleware) {
 Ditto.prototype.write = function() {
   var self = this;
 
-	Object.keys(self.files).forEach(function(filepath){
+  Object.keys(self.files).forEach(function(filepath) {
     var file = self.files[filepath];
 
-    fs.outputFile(path.resolve(self._destination, file.path), file.content, function(err){
-      if(err) throw err;
+    fs.outputFile(path.resolve(self._destination, file.path), file.content, function(err) {
+      if (err) throw err;
     });
   });
 };

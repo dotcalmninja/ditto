@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {    
+  "dependencies": {
+    "ditt0": "^1.0.0",
+    "ditt0-json": "^1.0.0",
+    "ditt0-hbs": "^1.0.0"
   },
   "scripts": {
     "start": "node index.js"

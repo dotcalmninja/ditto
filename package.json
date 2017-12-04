@@ -1,9 +1,8 @@
 {
   "name": "ditt0",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A pluggable build tool written in Node.js",
   "main": "index.js",
-  "license": "GPL-3.0",
   "scripts": {
   },
   "dependencies": {
@@ -22,5 +21,15 @@
     "wintersmith",
     "blacksmith",
     "hugo"
-  ]
+  ],
+  "author": "Pim Brouwers",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pimbrouwers/ditto.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pimbrouwers/ditto/issues"
+  },
+  "homepage": "https://github.com/pimbrouwers/ditto#readme"
 }

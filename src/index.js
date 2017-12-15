@@ -33,10 +33,10 @@ util.inherits(Ditto, events.EventEmitter);
 
 /* Build It */
 Ditto.prototype.build = function(onError) {
-  console.info("INFO: build()");
+  console.info("*** DITTO Build ***");
 
   //register listeners
-  this.on("foundFiles", this.read);
+  this.on("foundFiles", this.readFiles);
   this.on("readFiles", this.run);
   this.on("middlewareDone", this.write);
 
@@ -69,8 +69,7 @@ Ditto.prototype.destination = function(destination) {
 
 /* Discover & parse files in source directory */
 Ditto.prototype.discover = function() {
-  console.info("INFO: discover()");
-  var self = this;
+  let self = this;
 
   glob(this._source + '/**/*.*', function(err, filepaths) {
     if (err) throw err;
@@ -86,10 +85,8 @@ Ditto.prototype.metadata = function(metadata) {
 };
 
 /* Read files into buffer */
-Ditto.prototype.read = function(filepaths) {
-  console.info("INFO: read()");
-
-  var self = this,
+Ditto.prototype.readFiles = function(filepaths) {
+  let self = this,
     promises = [];
 
   for (var i = 0; i < filepaths.length; i++) {
@@ -112,9 +109,7 @@ Ditto.prototype.read = function(filepaths) {
 
 /* Read file async */
 Ditto.prototype.readFile = function(filepath) {
-  console.info("INFO: readFile(): %s", filepath);
-
-  var self = this;
+  let self = this;
 
   return new Promise(function(resolve, reject) {
     fs.stat(filepath, function(err, stats) {
@@ -136,13 +131,11 @@ Ditto.prototype.readFile = function(filepath) {
 
 /* Run middleware pipeline */
 Ditto.prototype.run = function() {
-  console.info("INFO: run()");
-
-  var self = this,
+  let self = this,
     i = 0;
 
   function next(files) {
-    var mw = self.middleware[i++];
+    let mw = self.middleware[i++];
 
     if (mw)
       mw.run(self.files, self, next);
@@ -170,10 +163,10 @@ Ditto.prototype.use = function(middleware) {
 
 /* Write Files */
 Ditto.prototype.write = function() {
-  var self = this;
+  let self = this;
 
   Object.keys(self.files).forEach(function(filepath) {
-    var file = self.files[filepath];
+    let file = self.files[filepath];
 
     fs.outputFile(path.resolve(self._destination, file.path), file.content, function(err) {
       if (err) throw err;

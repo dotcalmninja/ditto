@@ -12,7 +12,8 @@ At its core ditto is nothing more than an abstract directory parser. All of the 
 
 Below is a  simple [example](https://github.com/pimbrouwers/ditto/tree/master/examples/basic-site)  using the [ditt0-hbs](https://npmjs.org/package/ditt0-hbs) and [ditto-json](https://npmjs.org/package/ditt0-json) middleware to generate a basic static site.
 
-1. `npm init` following the steps you should be left with something like:
+1. `npm init`
+2. `npm install ditt0`, `npm install ditt0-json` & `npm install ditt0-hbs` at which point you should be left with a package file that looks something like:
 ```json
 {
   "name": "basic-site",
@@ -29,7 +30,6 @@ Below is a  simple [example](https://github.com/pimbrouwers/ditto/tree/master/ex
   }
 }
 ```
-2. `npm install ditt0`, `npm install ditt0-json` & `npm install ditt0-hbs`
 3. Create the `./src` directory to house your page content (note: this is the directory ditt0 will parse as denoted by `.source('./src')`)
 4. Create the `./templates` and `./templates/partials` directory to house your handlebars templates (note: [ditt0-hbs](https://npmjs.org/package/ditt0-hbs) will look for these directories by default, but is customizable using the `templates` and `partials` properties respectively)
 5. In the root directory create `index.js` and include the following code:

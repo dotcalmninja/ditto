@@ -1,12 +1,12 @@
-# ditt0
+# ditto
 
 [![NPM](https://nodei.co/npm/ditt0.png?mini=true)](https://npmjs.org/package/ditt0)
 
 > An extremely easy-to-use, composable, static site builder. But also much more...
 
-A performant file pipeline, ditt0 allows you to compose your solution through a stack of prefabricated or ad hoc _middleware_. Provide ditto with a directory to parse, include some middleware and start building. 
+A performant file pipeline, ditto allows you to compose your solution through a stack of prefabricated or ad hoc _middleware_. Provide ditto with a directory to parse, include some middleware and start building. 
 
-At its core ditt0 is nothing more than an abstract directory parser. All of the magic happens as the file buffers are parsed through the designated stack of middleware.
+At its core ditto is nothing more than an abstract directory parser. All of the magic happens as the file buffers are parsed through the designated stack of middleware.
 
 ## Getting Started
 

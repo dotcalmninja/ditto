@@ -30,8 +30,10 @@ Below is a  simple [example](https://github.com/pimbrouwers/ditto/tree/master/ex
   }
 }
 ```
-3. Create the `./src` directory to house your page content (note: this is the directory ditt0 will parse as denoted by `.source('./src')`)
-4. Create the `./templates` and `./templates/partials` directory to house your handlebars templates (note: [ditt0-hbs](https://npmjs.org/package/ditt0-hbs) will look for these directories by default, but is customizable using the `templates` and `partials` properties respectively)
+3. Create the `./src` directory to house your page content 
+  * this is the directory ditt0 will parse as denoted by `.source('./src')`
+4. Create the `./templates` and `./templates/partials` directories to house your handlebars templates
+  * [ditt0-hbs](https://npmjs.org/package/ditt0-hbs) will look for these directories by default, but is customizable using the `templates` and `partials` properties respectively)
 5. In the root directory create `index.js` and include the following code:
 ```javascript
 const
@@ -56,7 +58,7 @@ Ditto(__dirname)
     Console.log("ditt0 basic site finished building!")
   });
 ```
-6. `npm start`
+6. To build run: `npm start`
 7. Profit!
 
 ## License

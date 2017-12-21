@@ -10,7 +10,11 @@ Ditto(__dirname)
   .source('./src')
   .destination('./build')
   .use(new DittoJson())
-  .use(new DittoHbs())
+  .use(new DittoHbs({
+    defaultTemplate: 'index',
+    partials: './templates/partials',
+    templates: './templates'
+  }))
   .build(function(err){
     if(err) throw err;    
     console.log("examples/basic-site finished building!")

@@ -61,6 +61,26 @@ Ditto(__dirname)
 6. To build run: `npm start`
 7. Profit!
 
+## API
+
+`metadata(object)`
+Set globally accessible data.
+
+`source(path)`
+The directory you want ditto to parse.
+
+`destination(path)`
+Where you want the built files to go.
+
+`use(fn)`
+Add middleware to the stack.
+
+`clobber(boolean)`
+Option to clear the destination directory before building (true by default)
+
+`build(fn)`
+Build the project with the given settings.
+
 ## License
 MIT License
 

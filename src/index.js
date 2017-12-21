@@ -32,20 +32,23 @@ function Ditto(workingDirectory) {
 util.inherits(Ditto, events.EventEmitter);
 
 /* Build It */
-Ditto.prototype.build = function(onError) {
-  console.info("*** DITTO Build ***");
+Ditto.prototype.build = function(onBuild) {
+  console.info("*************\n*** ditt0 ***\n*************");
 
   //register listeners
   this.on("foundFiles", this.readFiles);
   this.on("readFiles", this.run);
   this.on("middlewareDone", this.write);
 
+  if(onBuild)
+    this.on("built", onBuild);
+
   try {
     //kickoff build
     this.discover();
   } catch (err) {
     console.error(err);
-    if (onError(err));
+    if (onBuild) onBuild(err);
   }
 };
 
@@ -172,4 +175,6 @@ Ditto.prototype.write = function() {
       if (err) throw err;
     });
   });
+
+  self.emit("built");
 };

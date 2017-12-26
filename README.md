@@ -6,11 +6,11 @@
 
 A performant file pipeline, ditto allows you to compose your solution through a stack of prefabricated or ad hoc _middleware_. Provide ditto with a directory to parse, include some middleware and start building. 
 
-At its core ditto is nothing more than an abstract directory parser. All of the magic happens as the file buffers are parsed through the designated stack of middleware.
+At its core ditto is nothing more than an asynchronous (and recursive) directory reader. All of the magic happens as the file buffers are parsed through the designated stack of middleware.
 
 ## Getting Started
 
-Below is a  simple [example](https://github.com/pimbrouwers/ditto/tree/master/examples/basic-site)  using the [ditt0-hbs](https://npmjs.org/package/ditt0-hbs) and [ditto-json](https://npmjs.org/package/ditt0-json) middleware to generate a basic static site.
+Below is a  simple [example](https://github.com/pimbrouwers/ditto/tree/master/examples/basic-site)  using the [ditto-hbs](https://npmjs.org/package/ditt0-hbs) and [ditto-json](https://npmjs.org/package/ditt0-json) middleware to generate a basic static site.
 
 1. `npm init`
 2. `npm install ditt0`, `npm install ditt0-json` & `npm install ditt0-hbs` at which point you should be left with a package file that looks something like:
@@ -26,7 +26,7 @@ Below is a  simple [example](https://github.com/pimbrouwers/ditto/tree/master/ex
     "ditt0-hbs": "^1.0.0"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index"
   }
 }
 ```

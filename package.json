@@ -1,10 +1,9 @@
 {
   "name": "ditt0",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A pluggable build tool written in Node.js",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
     "fs-extra": "^4.0.2",
     "glob": "^7.1.2",
@@ -20,7 +19,9 @@
     "jekyll",
     "wintersmith",
     "blacksmith",
-    "hugo"
+    "hugo",
+    "scafollding",
+    "builder"
   ],
   "author": "Pim Brouwers",
   "license": "MIT",

@@ -1,7 +1,7 @@
 const
-  Ditto = require('ditto'),
-  DittoJson = require('ditto-json'),
-  DittoHbs = require('ditto-hbs');
+  Ditto = require('ditt0'),
+  DittoJson = require('ditt0-json'),
+  DittoHbs = require('ditt0-hbs');
 
 Ditto(__dirname)
   .metadata({
@@ -11,10 +11,11 @@ Ditto(__dirname)
   .destination('./build')
   .use(new DittoJson())
   .use(new DittoHbs({
-  	defaultTemplate: 'index',
-  	partials: './templates/partials',
-  	templates: './templates'
+    defaultTemplate: 'index',
+    partials: './templates/partials',
+    templates: './templates'
   }))
   .build(function(err){
-  	if(err) throw err;
+    if(err) throw err;    
+    console.log("examples/basic-site finished building!")
   });

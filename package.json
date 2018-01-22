@@ -3,12 +3,17 @@
   "version": "1.0.3",
   "description": "A pluggable build tool written in Node.js",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "jasmine"
+  },
   "dependencies": {
     "fs-extra": "^4.0.2",
     "glob": "^7.1.2",
     "rimraf": "^2.6.2"
-  },
+	},
+	"devDependencies": {
+		"jasmine": "^2.8.0"
+	},
   "keywords": [
     "static",
     "file",

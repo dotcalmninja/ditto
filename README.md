@@ -2,7 +2,7 @@
 
 [![NPM](https://nodei.co/npm/ditt0.png?mini=true)](https://npmjs.org/package/ditt0)
 
-> An extremely easy-to-use, composable, static site builder. But also much more...
+> An extremely easy-to-use, composable build pipeline.
 
 A performant file pipeline, ditto allows you to compose your solution through a stack of prefabricated or ad hoc _middleware_. Provide ditto with a directory to parse, include some middleware and start building. 
 

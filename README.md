@@ -8,75 +8,22 @@ A performant file pipeline, ditto allows you to compose your solution through a 
 
 At its core ditto is nothing more than an asynchronous (and recursive) directory reader. All of the magic happens as the file buffers are parsed through the designated stack of middleware.
 
-## Getting Started
-
-Below is a  simple [example](https://github.com/pimbrouwers/ditto/tree/master/examples/basic-site)  using the [ditto-hbs](https://npmjs.org/package/ditt0-hbs) and [ditto-json](https://npmjs.org/package/ditt0-json) middleware to generate a basic static site.
-
-1. `npm init`
-2. `npm install ditt0`, `npm install ditt0-json` & `npm install ditt0-hbs` at which point you should be left with a package file that looks something like:
-```json
-{
-  "name": "basic-site",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "dependencies": {
-    "ditt0": "^1.0.0",
-    "ditt0-json": "^1.0.0",
-    "ditt0-hbs": "^1.0.0"
-  },
-  "scripts": {
-    "start": "node index"
-  }
-}
-```
-3. Create the `./src` directory to house your page content 
-    > This is the directory ditt0 will parse as denoted by `.source('./src')`
-4. Create the `./templates` and `./templates/partials` directories to house your handlebars templates
-    > [ditt0-hbs](https://npmjs.org/package/ditt0-hbs) will look for these directories by default, but is customizable using the `templates` and `partials` properties respectively)
-5. In the root directory create `index.js` and include the following code:
-```javascript
-const
-  Ditto = require('ditto'),
-  DittoJson = require('ditto-json'),
-  DittoHbs = require('ditto-hbs');
-  
-Ditto(__dirname)
-  .metadata({
-    title: 'ditto basic site'
-  })
-  .source('./src')
-  .destination('./build')
-  .use(new DittoJson())
-  .use(new DittoHbs({
-    defaultTemplate: 'index',
-    partials: './templates/partials',
-    templates: './templates'
-  }))
-  .build(function(err){
-    if(err) throw err;
-    Console.log("ditt0 basic site finished building!")
-  });
-```
-6. To build run: `npm start`
-7. Profit!
-
 ## API
 
 `metadata(object)`
-Set globally accessible data.
+Set globally accessible data. Default value: `{}`.
 
 `source(path)`
-The directory you want ditto to parse.
+The directory you want ditto to parse. Default value: `src`.
 
 `destination(path)`
-Where you want the built files to go.
+Where you want the built files to go. Default value: `public`.
 
 `use(fn)`
-Add middleware to the stack.
+Add middleware to the stack. 
 
 `clobber(boolean)`
-Option to clear the destination directory before building (true by default)
+Option to clear the destination directory before building. Default value: `false`.
 
 `build(fn)`
 Build the project with the given settings.

@@ -2,7 +2,8 @@
  * Ditto
  */
 const
-  events = require('events'),
+	async = require('async'),
+  // events = require('events'),
   fs = require('fs-extra'),
   glob = require('glob'),
   path = require('path'),
@@ -16,120 +17,178 @@ function Ditto(workingDirectory) {
     return new Ditto(workingDirectory);
   }
 
-  //pipline
-  this.clobber(true);
-  this.files = {};
+	this.files = {};
+
+  //defaults
+	this.clobber(false);  
+	this.destination('public');
   this.metadata({});
   this.middleware = [];
+	this.source('src');
 
-  //directories
-  this.destination('build');
-  this.source('src');
-  this.cwd(workingDirectory);
+	//working directory
+  if (typeof workingDirectory == 'string') {
+    this.cwd(workingDirectory);
+	} 
+	else {
+    this.cwd(__dirname);
+	}
 };
 
-/* Inherit Event Emitter prototype */
-util.inherits(Ditto, events.EventEmitter);
+/**
+ * Inherit Event Emitter prototype
+ */
+// util.inherits(Ditto, events.EventEmitter);
 
-/* Build It */
+/**
+ * Build It
+ * @param {function} onBuild 
+ */
 Ditto.prototype.build = function(onBuild) {
   console.info("*************\n*** ditt0 ***\n*************");
 
-  //register listeners
-  this.on("foundFiles", this.readFiles);
-  this.on("readFiles", this.run);
-  this.on("middlewareDone", this.write);
+	async.waterfall([
+		this.discover.bind(this),
+		this.readFiles.bind(this)
+	], function(err, results){
+		console.log(err, results);
+	});
+  // //register listeners
+  // this.on("foundFiles", this.readFiles);
+  // this.on("readFiles", this.run);
+  // this.on("middlewareDone", this.write);
 
-  if(onBuild)
-    this.on("built", onBuild);
+  // if (onBuild)
+  //   this.on("built", onBuild);
 
-  try {
-    //kickoff build
-    this.discover();
-  } catch (err) {
-    console.error(err);
-    if (onBuild) onBuild(err);
-  }
+  // try {
+  //   //kickoff build
+  //   this.discover();
+  // } catch (err) {
+  //   console.error(err);
+  //   if (onBuild) onBuild(err);
+  // }
 };
 
-/* Should we clobber on build? */
+/**
+ * Should we clobber on build?
+ * @param {boolean} clobber 
+ */
 Ditto.prototype.clobber = function(clobber) {
   this._clobber = clobber;
   return this;
 };
 
-/* Set current working directory */
+/**
+ * Set current working directory
+ * @param {String} cwd 
+ */
 Ditto.prototype.cwd = function(cwd) {
   this._cwd = path.resolve(cwd);
   return this;
 };
 
-/* Set destination directory */
+/**
+ * Set the build destination directory
+ * @param {String} destination 
+ */
 Ditto.prototype.destination = function(destination) {
   this._destination = path.resolve(destination);
   return this;
 };
 
-/* Discover & parse files in source directory */
-Ditto.prototype.discover = function() {
-  let self = this;
-
+/**
+ * Discover & parse files in source directory
+ */
+Ditto.prototype.discover = function(callback) {
   glob(this._source + '/**/*.*', function(err, filepaths) {
-    if (err) throw err;
-
-    self.emit("foundFiles", filepaths);
+		callback(err, filepaths)
   });
 };
 
-/* Set metadata */
+/**
+ * Set metadata
+ * @param {object} metadata 
+ */
 Ditto.prototype.metadata = function(metadata) {
-  this._metadata = metadata;
+	if(typeof metadata == 'object') {
+		this._metadata = metadata;	
+	}
+	else if(typeof metadata == 'string') {
+		let metadataPath = path.resolve(metadata);
+		
+		if(metadataPath) {
+			this._metadataPath = metadataPath;
+		}		
+	}	
+	
   return this;
 };
 
-/* Read files into buffer */
-Ditto.prototype.readFiles = function(filepaths) {
-  let self = this,
-    promises = [];
+/**
+ * Read files into buffer 
+ * @param {array} filepaths 
+ */
+Ditto.prototype.readFiles = function(filepaths, callback) {
+	async.map(filepaths, this.readFile.bind(this), function(err, files){
+		if(err) callback(err);
+		callback(null, files);
+	})
+  // let self = this,
+  //   promises = [];
 
-  for (var i = 0; i < filepaths.length; i++) {
-    promises.push(this.readFile(filepaths[i]));
-  }
+  // for (var i = 0; i < filepaths.length; i++) {
+  //   promises.push(this.readFile(filepaths[i]));
+  // }
 
-  Promise.all(promises)
-    .then(function(filesAry) {
-      filesAry.map(function(file) {
-        self.files[file.rel] = {
-          content: file.buffer,
-          path: file.rel,
-          stats: file.stats
-        };
-      });
+  // Promise.all(promises)
+  //   .then(function(filesAry) {
+  //     filesAry.map(function(file) {
+  //       self.files[file.rel] = {
+  //         content: file.buffer,
+  //         path: file.rel,
+  //         stats: file.stats
+  //       };
+  //     });
 
-      self.emit("readFiles");
-    });
+  //     self.emit("readFiles");
+  //   });
 };
 
 /* Read file async */
-Ditto.prototype.readFile = function(filepath) {
-  let self = this;
+Ditto.prototype.readFile = function(filepath, callback) {
+	let self = this;
+	fs.stat(filepath, function(err, stats){
+		if(err) callback(err, null);
 
-  return new Promise(function(resolve, reject) {
-    fs.stat(filepath, function(err, stats) {
-      if (err) reject(err);
+		fs.readFile(filepath, function(err, buffer){
+			if(err) callback(err, null);
+			
+			callback(null, {
+				rel: path.relative(self._source, filepath),
+				buffer: buffer,
+				stats: stats
+			})
+		});
+	})	
+  // let self = this;
 
-      fs.readFile(filepath, function(err, buffer) {
-        if (err) reject(err);
-        else {
-          resolve({
-            rel: path.relative(self._source, filepath),
-            buffer: buffer,
-            stats: stats
-          });
-        }
-      });
-    });
-  });
+  // return new Promise(function(resolve, reject) {
+  //   fs.stat(filepath, function(err, stats) {
+  //     if (err) reject(err);
+
+  //     fs.readFile(filepath, function(err, buffer) {
+  //       if (err) reject(err);
+  //       else {
+  //         resolve({
+  //           rel: path.relative(self._source, filepath),
+  //           buffer: buffer,
+  //           stats: stats
+  //         });
+  //       }
+  //     });
+  //   });
+  // });
 };
 
 /* Run middleware pipeline */

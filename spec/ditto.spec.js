@@ -19,21 +19,19 @@ describe('ditto', function() {
 	 */
 	it('metadata should equal {}', function(){
 		let cwdCompare = path.resolve('src');
-		let metadata = { title: 'test' };
-		let ditto = new Ditto(cwdCompare).metadata(metadata);
-		
-		expect(ditto._cwd).toEqual(cwdCompare);
-		expect(ditto._metadata).toEqual(metadata);
-	});
-
-	it('metadata should equal {} and metadata path should be set', function(){
-		let cwdCompare = path.resolve('src');
-		let metadata = cwdCompare;
-		let ditto = new Ditto(cwdCompare).metadata(metadata);
+		let ditto = new Ditto(cwdCompare);
 		
 		expect(ditto._cwd).toEqual(cwdCompare);
 		expect(ditto._metadata).toEqual({});
-		expect(ditto._metadataPath).toEqual(metadata);
+	});
+
+	it('metadata should equal { title: "test" }', function () {
+		let cwdCompare = path.resolve('src');
+		let metadata = { title: 'test' };
+		let ditto = new Ditto(cwdCompare).metadata(metadata);
+
+		expect(ditto._cwd).toEqual(cwdCompare);
+		expect(ditto._metadata).toEqual(metadata);
 	});
 
 	/**
@@ -85,5 +83,42 @@ describe('ditto', function() {
 		let ditto = new Ditto(destinationCompare).destination('publicTest');
 
 		expect(ditto._destination).toEqual(destinationCompare);
+	});
+
+	/**
+	 * Discover Files
+	 */
+	it('should find 1 file', function(){
+		let ditto = new Ditto().source('./spec/support/files');
+		
+		ditto.discover(function(err, filepaths){
+			expect(filepaths.length).toEqual(1);
+		});
+	});
+	
+});
+
+describe('ditto read files', function () {
+	let 
+		ditto = new Ditto().source('./spec/support/files'),
+		filepaths = [];
+	
+	beforeEach(function(done){		
+		ditto.discover(function(err, fp){
+			filepaths = fp;
+			done();
+		});
+	});
+
+	/**
+	 * Read Files
+	 */
+	it('should return 1 DittoFile', function () {
+		ditto.readFiles(filepaths, function (err, files) {					
+			var file = files[0];
+
+			expect(files.length).toEqual(1);
+			expect(file.path).toEqual('index.json');
+		});
 	});
 });

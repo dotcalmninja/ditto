@@ -20,43 +20,43 @@ function Ditto(workingDirectory) {
   }
 
   //defaults
-	this.clobber(false);  
-	this.destination('public');
+  this.clobber(false);
+  this.destination('public');
   this.metadata({});
   this.middleware = [];
-	this.source('src');
+  this.source('src');
 
-	//working directory
+  //working directory
   if (typeof workingDirectory == 'string') {
     this.cwd(workingDirectory);
-	} 
-	else {
+  }
+  else {
     this.cwd(__dirname);
-	}
+  }
 };
 
 /**
  * Build It
  * @param {function} onBuild 
  */
-Ditto.prototype.build = function(onBuild) {
+Ditto.prototype.build = function (onBuild) {
   console.info("*************\n*** ditt0 ***\n*************");
 
-	async.waterfall([
-		this.discover.bind(this),
+  async.waterfall([
+    this.discover.bind(this),
     this.readFiles.bind(this),
     this.run.bind(this),
     this.writeFiles.bind(this)
-	], function(err){    
+  ], function (err) {
     if (onBuild) onBuild(err);
-	});
+  });
 };
 
 /**
  * Should we clobber on build?
  * @param {boolean} clobber 
  */
-Ditto.prototype.clobber = function(clobber) {
+Ditto.prototype.clobber = function (clobber) {
   this._clobber = clobber;
   return this;
 };
@@ -65,7 +65,7 @@ Ditto.prototype.clobber = function(clobber) {
  * Set current working directory
  * @param {String} cwd 
  */
-Ditto.prototype.cwd = function(cwd) {
+Ditto.prototype.cwd = function (cwd) {
   this._cwd = path.resolve(cwd);
   return this;
 };
@@ -74,7 +74,7 @@ Ditto.prototype.cwd = function(cwd) {
  * Set the build destination directory
  * @param {String} destination 
  */
-Ditto.prototype.destination = function(destination) {
+Ditto.prototype.destination = function (destination) {
   this._destination = path.resolve(destination);
   return this;
 };
@@ -83,9 +83,9 @@ Ditto.prototype.destination = function(destination) {
  * Discover & parse files in source directory
  * @param {Function.<Error, Array.<string>>} callback
  */
-Ditto.prototype.discover = function(callback) {
-  glob(this._source + '/**/*.*', function(err, filepaths) {
-		callback(err, filepaths)
+Ditto.prototype.discover = function (callback) {
+  glob(this._source + '/**/*.*', function (err, filepaths) {
+    callback(err, filepaths)
   });
 };
 
@@ -93,8 +93,8 @@ Ditto.prototype.discover = function(callback) {
  * Set metadata
  * @param {Object} metadata 
  */
-Ditto.prototype.metadata = function(metadata) {
-  this._metadata = metadata;		
+Ditto.prototype.metadata = function (metadata) {
+  this._metadata = metadata;
   return this;
 };
 
@@ -103,11 +103,11 @@ Ditto.prototype.metadata = function(metadata) {
  * @param {Array.<String>} filepaths 
  * @param {Function.<Error, Array.<Object.<DittoFile>>>} callback
  */
-Ditto.prototype.readFiles = function(filepaths, callback) {  
-	async.map(filepaths, this.readFile.bind(this), function(err, files){
-		if(err) callback(err);
-		callback(null, files);
-	});
+Ditto.prototype.readFiles = function (filepaths, callback) {
+  async.map(filepaths, this.readFile.bind(this), function (err, files) {
+    if (err) callback(err);
+    callback(null, files);
+  });
 };
 
 /**
@@ -115,25 +115,25 @@ Ditto.prototype.readFiles = function(filepaths, callback) {
  * @param {String} filepath 
  * @param {Function.<Error, Object.<DittoFile>>} callback
  */
-Ditto.prototype.readFile = function(filepath, callback) {
+Ditto.prototype.readFile = function (filepath, callback) {
   let self = this;
-  
-	fs.stat(filepath, function(err, stats){
-		if(err) callback(err, null);
 
-		fs.readFile(filepath, function(err, buffer){
-			if(err) callback(err, null);
-			
+  fs.stat(filepath, function (err, stats) {
+    if (err) callback(err, null);
+
+    fs.readFile(filepath, function (err, buffer) {
+      if (err) callback(err, null);
+
       callback(null, new DittoFile(buffer, path.relative(self._source, filepath), stats));
-		});
-	})	
+    });
+  })
 };
 
 /**
  * Run middleware pipeline
  * @param {Function} callback
  */
-Ditto.prototype.run = function(files, callback) {
+Ditto.prototype.run = function (files, callback) {
   let self = this,
     i = 0;
 
@@ -156,7 +156,7 @@ Ditto.prototype.run = function(files, callback) {
  * Set source directory
  * @param {String} source 
  */
-Ditto.prototype.source = function(source) {
+Ditto.prototype.source = function (source) {
   this._source = path.resolve(source);
   return this;
 };
@@ -165,7 +165,7 @@ Ditto.prototype.source = function(source) {
  * Add middleware to file processing pipeline
  * @param {Function} middleware 
  */
-Ditto.prototype.use = function(middleware) {
+Ditto.prototype.use = function (middleware) {
   this.middleware.push(middleware);
   return this;
 };
@@ -175,11 +175,11 @@ Ditto.prototype.use = function(middleware) {
  * @param {Array.<DittoFile>} files collection of DittoFile
  * @param {Function.<Error>} callback
  */
-Ditto.prototype.writeFiles = function(files, callback) {
+Ditto.prototype.writeFiles = function (files, callback) {
   async.map(files, this.writeFile.bind(this), function (err) {
     if (err) callback(err);
     callback();
-  });  
+  });
 };
 
 /**
@@ -187,7 +187,7 @@ Ditto.prototype.writeFiles = function(files, callback) {
  * @param {Object.<DittoFile>} file DittoFile
  * @param {Function.<Error>} callback
  */
-Ditto.prototype.writeFile = function(file, callback){
+Ditto.prototype.writeFile = function (file, callback) {
   let self = this;
 
   fs.outputFile(path.resolve(self._destination, file.path), file.content, function (err) {

@@ -7,14 +7,14 @@
     "test": "jasmine"
   },
   "dependencies": {
-		"async": "^2.6.0",
+    "async": "^2.6.0",
     "fs-extra": "^4.0.2",
     "glob": "^7.1.2",
     "rimraf": "^2.6.2"
-	},
-	"devDependencies": {
-		"jasmine": "^2.8.0"
-	},
+  },
+  "devDependencies": {
+    "jasmine": "^2.8.0"
+  },
   "keywords": [
     "static",
     "file",

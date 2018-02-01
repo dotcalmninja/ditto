@@ -5,7 +5,6 @@ A performant file pipeline, ditto allows you to compose your solution through a 
 At its core ditto is nothing more than an asynchronous (and recursive) directory reader. All of the magic happens as the file buffers are parsed through the designated stack of middleware.
 
 [![npm](https://img.shields.io/npm/v/ditt0.svg)](https://www.npmjs.com/package/ditt0)
-[![NPM](https://nodei.co/npm/ditt0.png?mini=true)](https://npmjs.org/package/ditt0)
 
 ## API
 

@@ -1,6 +1,6 @@
 {
   "name": "ditt0",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A pluggable build tool written in Node.js",
   "main": "index.js",
   "scripts": {

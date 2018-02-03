@@ -43,13 +43,27 @@ Ditto.prototype.build = function (onBuild) {
   console.info("*************\n*** ditt0 ***\n*************");
 
   async.waterfall([
+    this.clean.bind(this),
     this.discover.bind(this),
-    this.readFiles.bind(this),
+    this.readFiles.bind(this),    
     this.run.bind(this),
     this.writeFiles.bind(this)
   ], function (err) {
     if (onBuild) onBuild(err);
   });
+};
+
+/**
+ * Clean destination if clobber
+ * @param {Function} callback 
+ */
+Ditto.prototype.clean = function(callback){
+  if(this._clobber) {
+    rimraf(path.join(this._destination, '/*'), callback);
+  }
+  else {
+    callback(null);
+  }
 };
 
 /**
@@ -138,19 +152,19 @@ Ditto.prototype.run = function (files, callback) {
   let self = this,
     i = 0;
 
-  function next(f) {
+  function next(err, files) {
     let mw = self.middleware[i++];
 
-    if (mw)
-      mw.run(f, self, next);
-    else
-      callback(null, f);
+    if (mw) {      
+      mw.run(files, self, next);
+    }      
+    else {      
+      callback(null, files);
+    }
+      
   };
 
-  if (self._clobber)
-    rimraf(path.join(self._destination, '/*'), next.bind(null, files));
-  else
-    next(files);
+  next(null, files);   
 };
 
 /**
@@ -179,7 +193,7 @@ Ditto.prototype.use = function (middleware) {
 Ditto.prototype.writeFiles = function (files, callback) {
   async.map(files, this.writeFile.bind(this), function (err) {
     if (err) callback(err);
-    callback();
+    callback(null);
   });
 };
 
@@ -188,11 +202,9 @@ Ditto.prototype.writeFiles = function (files, callback) {
  * @param {Object.<DittoFile>} file DittoFile
  * @param {Function.<Error>} callback
  */
-Ditto.prototype.writeFile = function (file, callback) {
-  let self = this;
-
-  fs.outputFile(path.resolve(self._destination, file.path), file.content, function (err) {
+Ditto.prototype.writeFile = function (file, callback) { 
+  fs.outputFile(path.resolve(this._destination, file.path), file.content, function (err) {
     if (err) callback(err);
-    callback();
+    callback(null);
   });
 };

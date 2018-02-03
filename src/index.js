@@ -85,7 +85,8 @@ Ditto.prototype.destination = function (destination) {
  */
 Ditto.prototype.discover = function (callback) {
   glob(this._source + '/**/*.*', function (err, filepaths) {
-    callback(err, filepaths)
+    if(err) callback(err);    
+    callback(null, filepaths);
   });
 };
 
@@ -147,7 +148,7 @@ Ditto.prototype.run = function (files, callback) {
   };
 
   if (self._clobber)
-    rimraf(path.join(self._destination, '/*'), next.bind(null, self.files));
+    rimraf(path.join(self._destination, '/*'), next.bind(null, files));
   else
     next(files);
 };

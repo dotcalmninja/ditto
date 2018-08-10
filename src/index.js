@@ -141,7 +141,7 @@ Ditto.prototype.readFile = function (filepath, callback) {
     fs.readFile(filepath, function (err, buffer) {      
       if (err) callback(err, null);
       
-      callback(null, new DittoFile(buffer, self._source, filepath, stats));
+      callback(null, new DittoFile(buffer, path.relative(self._source, filepath), stats));
     });
   })
 };
@@ -205,7 +205,7 @@ Ditto.prototype.writeFiles = function (files, callback) {
  * @param {Function.<Error>} callback
  */
 Ditto.prototype.writeFile = function (file, callback) { 
-  fs.outputFile(path.resolve(this._destination, file.path), file.content, function (err) {
+  fs.outputFile(path.resolve(this._destination, file.pathWithExtension()), file.content, function (err) {
     if (err) callback(err);
     callback(null);
   });

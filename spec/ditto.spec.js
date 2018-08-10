@@ -7,7 +7,7 @@ describe('ditto', function() {
   /**
    * Working Directory
    */
-  it('cwd should equal __dirname', function(){
+  it('cwd should equal __dirname', function(){    
     let cwdCompare = path.resolve('src');
     let ditto = new Ditto(cwdCompare);
 
@@ -88,37 +88,44 @@ describe('ditto', function() {
   /**
    * Discover Files
    */
-  it('should find 1 file', function(){
+  it('should find 2 files', function(){
     let ditto = new Ditto().source('./spec/support/files');
     
     ditto.discover(function(err, filepaths){
-      expect(filepaths.length).toEqual(1);
+      expect(filepaths.length).toEqual(2);
     });
   });
   
 });
 
 describe('ditto read files', function () {
-  let 
-    ditto = new Ditto().source('./spec/support/files'),
-    filepaths = [];
+  let ditto = new Ditto().source('./spec/support/files');
+  let files = [];
   
-  beforeEach(function(done){		
-    ditto.discover(function(err, fp){
-      filepaths = fp;
-      done();
+  beforeAll(function(done){		
+    ditto.discover(function(err, filepaths){
+      ditto.readFiles(filepaths, function (err, f) {
+        files = f;
+
+        done();
+      });
     });
   });
 
   /**
    * Read Files
    */
-  it('should return 1 DittoFile', function () {
-    ditto.readFiles(filepaths, function (err, files) {					
-      var file = files[0];
+  it('should return 2 DittoFiles', function () {
+    var file = files[0];
+    
+    expect(files.length).toEqual(2);
+    
+    expect(files[0].path.ext).toEqual('.json');
+    expect(files[0].path.name).toEqual('index');
+    expect(files[0].path.rel).toEqual('index');    
 
-      expect(files.length).toEqual(1);
-      expect(file.path).toEqual('index.json');
-    });
+    expect(files[1].path.ext).toEqual('.json');
+    expect(files[1].path.name).toEqual('test');
+    expect(files[1].path.rel).toEqual('nested\\test');    
   });
 });

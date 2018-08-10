@@ -26,3 +26,7 @@ function DittoFile(buffer, src, filePath, stats) {
   this.path.name = parsedPath.name;
   this.path.rel = relativePath.replace(parsedPath.ext, '');
 };
+
+DittoFile.prototype.pathWithExtension = function(){
+  return this.path.rel + this.path.ext;
+};

@@ -118,9 +118,11 @@ Ditto.prototype.metadata = function (metadata) {
  * @param {Array.<String>} filepaths 
  * @param {Function.<Error, Array.<Object.<DittoFile>>>} callback
  */
-Ditto.prototype.readFiles = function (filepaths, callback) {
+Ditto.prototype.readFiles = function (filepaths, callback) {  
   async.map(filepaths, this.readFile.bind(this), function (err, files) {
+    
     if (err) callback(err);
+    
     callback(null, files);
   });
 };
@@ -132,13 +134,13 @@ Ditto.prototype.readFiles = function (filepaths, callback) {
  */
 Ditto.prototype.readFile = function (filepath, callback) {
   let self = this;
-
+  
   fs.stat(filepath, function (err, stats) {
     if (err) callback(err, null);
 
-    fs.readFile(filepath, function (err, buffer) {
+    fs.readFile(filepath, function (err, buffer) {      
       if (err) callback(err, null);
-
+      
       callback(null, new DittoFile(buffer, self._source, filepath, stats));
     });
   })

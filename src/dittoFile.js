@@ -24,19 +24,3 @@ function DittoFile(buffer, relPath, stats) {
   this.path.ext = parsedPath.ext;
   this.path.name = parsedPath.name;
 };
-
-/**
- * Get path with extension for purpose of writing to disk
- */
-DittoFile.prototype.pathWithExtension = function(){
-  return this.pathWithoutExtension() + this.path.ext;
-};
-
-/**
- * Get path with extension for purpose of writing to disk
- */
-DittoFile.prototype.pathWithoutExtension = function () {
-  var pathWithoutExtension = path.join(this.path.dir, this.path.name);
-
-  return pathWithoutExtension;
-};

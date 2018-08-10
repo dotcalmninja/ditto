@@ -72,7 +72,7 @@ Ditto.prototype.clean = function(callback){
  */
 Ditto.prototype.clobber = function (clobber, glob) {
   this._clobber = clobber;
-  this._clobberGlob = glob;
+  this._clobberGlob = glob || this._clobberGlob;
   return this;
 };
 
@@ -205,8 +205,8 @@ Ditto.prototype.writeFiles = function (files, callback) {
  * @param {Object.<DittoFile>} file DittoFile
  * @param {Function.<Error>} callback
  */
-Ditto.prototype.writeFile = function (file, callback) { 
-  fs.outputFile(path.resolve(this._destination, file.pathWithExtension()), file.content, function (err) {
+Ditto.prototype.writeFile = function (file, callback) {   
+  fs.outputFile(path.resolve(this._destination, path.join(filethis.path.dir, file.path.name + file.path.ext)), file.content, function (err) {
     if (err) callback(err);
     callback(null);
   });

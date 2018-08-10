@@ -13,10 +13,13 @@ function DittoFile(buffer, relPath, stats) {
   this.stats = stats;
 
   this.path = path.parse(relPath)  
-  this.path.rel = relPath.replace(this.path.ext, '');
+  
   delete this.path.root;  
+  delete this.path.base;
 };
 
 DittoFile.prototype.pathWithExtension = function(){
-  return this.path.rel + this.path.ext;
+  var pathWithExtension = path.join(this.path.dir, this.path.name + this.path.ext);
+
+  return pathWithExtension;
 };

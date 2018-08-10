@@ -122,10 +122,12 @@ describe('ditto read files', function () {
     
     expect(files[0].path.ext).toEqual('.json');
     expect(files[0].path.name).toEqual('index');
-    expect(files[0].path.rel).toEqual('index');    
+    expect(files[0].path.dir).toEqual('');    
+    expect(files[0].pathWithExtension()).toEqual('index.json');
 
     expect(files[1].path.ext).toEqual('.json');
     expect(files[1].path.name).toEqual('test');
-    expect(files[1].path.rel).toEqual('nested\\test');    
+    expect(files[1].path.dir).toEqual('nested');    
+    expect(files[1].pathWithExtension()).toEqual('nested\\test.json');
   });
 });

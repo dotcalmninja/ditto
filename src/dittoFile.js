@@ -29,7 +29,14 @@ function DittoFile(buffer, relPath, stats) {
  * Get path with extension for purpose of writing to disk
  */
 DittoFile.prototype.pathWithExtension = function(){
-  var pathWithExtension = path.join(this.path.dir, this.path.name + this.path.ext);
+  return this.pathWithoutExtension() + this.path.ext;
+};
 
-  return pathWithExtension;
+/**
+ * Get path with extension for purpose of writing to disk
+ */
+DittoFile.prototype.pathWithoutExtension = function () {
+  var pathWithoutExtension = path.join(this.path.dir, this.path.name);
+
+  return pathWithoutExtension;
 };

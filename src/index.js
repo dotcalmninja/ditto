@@ -20,7 +20,7 @@ function Ditto(workingDirectory) {
   }
 
   //defaults
-  this.clobber(false);
+  this.clobber(false, '/*');  
   this.destination('public');
   this.metadata({});
   this.middleware = [];
@@ -59,7 +59,7 @@ Ditto.prototype.build = function (onBuild) {
  */
 Ditto.prototype.clean = function(callback){
   if(this._clobber) {
-    rimraf(path.join(this._destination, '/*'), callback);
+    rimraf(path.join(this._destination, this._clobberGlob), callback);
   }
   else {
     callback(null);
@@ -70,8 +70,9 @@ Ditto.prototype.clean = function(callback){
  * Should we clobber on build?
  * @param {boolean} clobber 
  */
-Ditto.prototype.clobber = function (clobber) {
+Ditto.prototype.clobber = function (clobber, glob) {
   this._clobber = clobber;
+  this._clobberGlob = glob;
   return this;
 };
 

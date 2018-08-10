@@ -42,13 +42,15 @@ describe('ditto', function() {
     let ditto = new Ditto(cwdCompare);
 
     expect(ditto._clobber).toEqual(false);
+    expect(ditto._clobberGlob).toEqual('/*');
   });
 
   it('clobber should be "true"', function(){
     let cwdCompare = path.resolve('src');
-    let ditto = new Ditto(cwdCompare).clobber(true);
+    let ditto = new Ditto(cwdCompare).clobber(true, '/*!(*.css)');
 
     expect(ditto._clobber).toEqual(true);
+    expect(ditto._clobberGlob).toEqual('/*!(*.css)');
   });
 
   /**
@@ -124,12 +126,14 @@ describe('ditto read files', function () {
     expect(files[0].path.name).toEqual('index');
     expect(files[0].path.dir).toEqual('');    
     expect(files[0].path.rel).toEqual('index.json');    
+    expect(files[0].pathWithoutExtension()).toEqual('index');
     expect(files[0].pathWithExtension()).toEqual('index.json');
 
     expect(files[1].path.ext).toEqual('.json');
     expect(files[1].path.name).toEqual('test');
     expect(files[1].path.dir).toEqual('nested');    
     expect(files[1].path.rel).toEqual('nested\\test.json');    
+    expect(files[1].pathWithoutExtension()).toEqual('nested\\test');
     expect(files[1].pathWithExtension()).toEqual('nested\\test.json');
   });
 });

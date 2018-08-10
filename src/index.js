@@ -1,6 +1,6 @@
 const
   async = require('async'),
-  DittoFile = require('./dittoFile'),
+  DittoFile = require('./file'),
   fs = require('fs-extra'),
   glob = require('glob'),
   path = require('path'),

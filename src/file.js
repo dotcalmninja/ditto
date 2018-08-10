@@ -1,14 +1,14 @@
 var path = require('path');
-module.exports = file;
+module.exports = DittoFile;
 
 /**
- @typedef file
+ @typedef DittoFile
  @type {Object}
  @property {Array} buffer file contents as byte array
  @property {Object} relPath relative filepath
  @property {Object} stats node Stats object
  */
-function file(buffer, relPath, stats) {
+function DittoFile(buffer, relPath, stats) {
   this.content = buffer;
   this.stats = stats;
 

@@ -159,7 +159,7 @@ Ditto.prototype.run = function (files, callback) {
     let mw = self.middleware[i++];
 
     if (mw) {      
-      mw.run(files, self, next);
+      mw(files, self, next);
     }      
     else {      
       callback(null, files);

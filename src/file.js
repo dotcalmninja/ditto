@@ -16,7 +16,7 @@ function DittoFile(buffer, relPath, stats) {
     dir: '', //directory(s) relative to source
     ext: '', //file extension with dot
     name: '', //file name without extension
-    rel: relPath // original path, relative to source with extension
+    rel: path.normalize(relPath) // original path, relative to source with extension
   };
 
   var parsedPath = path.parse(relPath);

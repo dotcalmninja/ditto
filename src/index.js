@@ -140,7 +140,7 @@ Ditto.prototype.readFile = function (filepath, callback) {
 
     fs.readFile(filepath, function (err, buffer) {
       if (err) callback(err, null);
-
+      
       callback(null, new DittoFile(buffer, path.relative(self._source, filepath), stats));
     });
   })

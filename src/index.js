@@ -1,10 +1,9 @@
-const
-  async = require('async'),
-  DittoFile = require('./file'),
-  fs = require('fs-extra'),
-  glob = require('glob'),
-  path = require('path'),
-  rimraf = require('rimraf');
+const async = require('async');
+const DittoFile = require('./file');
+const fs = require('fs-extra');
+const glob = require('glob');
+const path = require('path');
+const rimraf = require('rimraf');
 
 module.exports = Ditto;
 
@@ -22,8 +21,9 @@ function Ditto(workingDirectory) {
   this.clobber(false, '/*');
   this.destination('public');
   this.metadata({});
-  this.middleware = [];
+  this._middleware = [];
   this.source('src');
+  this.stats(false);
 
   //working directory
   if (typeof workingDirectory == 'string') {
@@ -42,36 +42,24 @@ Ditto.prototype.build = function (onBuild) {
   console.info("*************\n*** ditt0 ***\n*************");
 
   async.waterfall([
-    this.clean.bind(this),
-    this.discover.bind(this),
-    this.readFiles.bind(this),
-    this.run.bind(this),
-    this.writeFiles.bind(this)
+    clean.bind(this),
+    discover.bind(this),
+    readFiles.bind(this),
+    run.bind(this),
+    writeFiles.bind(this)
   ], function (err) {
     if (onBuild) onBuild(err);
   });
 };
 
 /**
- * Clean destination if clobber
- * @param {Function} callback 
- */
-Ditto.prototype.clean = function (callback) {
-  if (this._clobber) {
-    rimraf(path.join(this._destination, this._clobberGlob), callback);
-  }
-  else {
-    callback(null);
-  }
-};
-
-/**
- * Should we clobber on build?
- * @param {boolean} clobber 
+ * Should we clobber on build? If so, gimme a glob or we nuke it!
+ * @param {boolean} clobber
+ * @param {String} glob 
  */
 Ditto.prototype.clobber = function (clobber, glob) {
   this._clobber = clobber;
-  this._clobberGlob = glob || this._clobberGlob;
+  this._clobberGlob = path.posix.normalize(glob || this._clobberGlob);
   return this;
 };
 
@@ -94,17 +82,6 @@ Ditto.prototype.destination = function (destination) {
 };
 
 /**
- * Discover & parse files in source directory
- * @param {Function.<Error, Array.<string>>} callback
- */
-Ditto.prototype.discover = function (callback) {
-  glob(this._source + '/**/*.*', function (err, filepaths) {
-    if (err) callback(err);
-    callback(null, filepaths);
-  });
-};
-
-/**
  * Set metadata
  * @param {Object} metadata 
  */
@@ -114,12 +91,63 @@ Ditto.prototype.metadata = function (metadata) {
 };
 
 /**
+ * Set source directory
+ * @param {String} source 
+ */
+Ditto.prototype.source = function (source) {
+  this._source = path.resolve(source);
+  return this;
+};
+
+/**
+ * Determines whether stats are included in each DittoFile
+ * @param {boolean} source 
+ */
+Ditto.prototype.stats = function (stats) {
+  this._stats = stats;
+  return this;
+};
+
+/**
+ * Add middleware to file processing pipeline
+ * @param {Function} middleware 
+ */
+Ditto.prototype.use = function (middleware) {
+  this._middleware.push(middleware);
+  return this;
+};
+
+/**
+ * Clean destination if clobber
+ * @param {Function} callback 
+ */
+function clean (callback) {
+  if (this._clobber) {
+    rimraf(path.join(destination, this._clobberGlob), callback);
+  }
+  else {
+    callback(null);
+  }
+};
+
+/**
+ * Discover & parse files in source directory
+ * @param {Function.<Error, Array.<string>>} callback
+ */
+function discover (callback) {
+  glob(path.join(this._source, '/**/*.*'), function (err, filepaths) {
+    if (err) callback(err);
+    callback(null, filepaths);
+  });
+};
+
+/**
  * Read files
  * @param {Array.<String>} filepaths 
  * @param {Function.<Error, Array.<Object.<DittoFile>>>} callback
  */
-Ditto.prototype.readFiles = function (filepaths, callback) {
-  async.map(filepaths, this.readFile.bind(this), function (err, files) {
+function readFiles (filepaths, callback) {
+  async.map(filepaths, readFile.bind(this), function (err, files) {
 
     if (err) callback(err);
 
@@ -132,7 +160,7 @@ Ditto.prototype.readFiles = function (filepaths, callback) {
  * @param {String} filepath 
  * @param {Function.<Error, Object.<DittoFile>>} callback
  */
-Ditto.prototype.readFile = function (filepath, callback) {
+function readFile (filepath, callback) {
   let self = this;
 
   fs.stat(filepath, function (err, stats) {
@@ -141,7 +169,8 @@ Ditto.prototype.readFile = function (filepath, callback) {
     fs.readFile(filepath, function (err, buffer) {
       if (err) callback(err, null);
       
-      callback(null, new DittoFile(buffer, path.relative(self._source, filepath), stats));
+      let rel = path.relative(self._source, filepath);
+      callback(null, new DittoFile(buffer, rel, (this._stats ? stats : null)));
     });
   })
 };
@@ -150,7 +179,7 @@ Ditto.prototype.readFile = function (filepath, callback) {
  * Run middleware pipeline
  * @param {Function} callback
  */
-Ditto.prototype.run = function (files, callback) {
+function run (files, callback) {
   let self = this,
     i = 0;
 
@@ -170,30 +199,12 @@ Ditto.prototype.run = function (files, callback) {
 };
 
 /**
- * Set source directory
- * @param {String} source 
- */
-Ditto.prototype.source = function (source) {
-  this._source = path.resolve(source);
-  return this;
-};
-
-/**
- * Add middleware to file processing pipeline
- * @param {Function} middleware 
- */
-Ditto.prototype.use = function (middleware) {
-  this.middleware.push(middleware);
-  return this;
-};
-
-/**
  * Write Files
  * @param {Array.<DittoFile>} files collection of DittoFile
  * @param {Function.<Error>} callback
  */
-Ditto.prototype.writeFiles = function (files, callback) {
-  async.map(files, this.writeFile.bind(this), function (err) {
+function writeFiles (files, callback) {
+  async.map(files, writeFile.bind(this), function (err) {
     if (err) callback(err);
     callback(null);
   });
@@ -204,7 +215,7 @@ Ditto.prototype.writeFiles = function (files, callback) {
  * @param {Object.<DittoFile>} file DittoFile
  * @param {Function.<Error>} callback
  */
-Ditto.prototype.writeFile = function (file, callback) {
+function writeFile (file, callback) {
   fs.outputFile(path.resolve(this._destination, path.join(file.path.dir, file.path.name + file.path.ext)), file.content, function (err) {
     if (err) callback(err);
     callback(null);
